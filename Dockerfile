@@ -1,6 +1,9 @@
 # Use a more stable parent image for better compatibility with Render's build env
 FROM python:3.10
 
+# Increase apt reliability for network flakiness in cloud build environments
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries
+
 # Install system dependencies for OpenCV and PIL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
