@@ -1,11 +1,13 @@
-# Use a more stable parent image for better compatibility with Render's build env
-FROM python:3.10
+# Use a specific, stable Debian-based image
+FROM python:3.10-bookworm
 
 # Increase apt reliability for network flakiness in cloud build environments
-RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries
+RUN echo 'Acquire::Retries "5";' > /etc/apt/apt.conf.d/80-retries
 
-# Install system dependencies for OpenCV and PIL
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies for OpenCV and PIL with extra resilience
+RUN apt-get clean && \
+    apt-get update --fix-missing && \
+    apt-get install -y --no-install-recommends \
     libgl1-mesa-glx \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
