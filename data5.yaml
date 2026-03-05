@@ -1,0 +1,21 @@
+# data5.yaml — 5-class dataset
+
+train: train
+val: valid
+
+# tell YOLO the custom label folder name
+path: .
+names:
+  0: general_agents
+  1: wheeled_assist
+  2: non_wheeled_assist
+  3: load_objects
+  4: personal_transport
+
+nc: 5
+
+# force YOLO to look inside labels5 instead of labels
+# (Ultralytics supports this option)
+yaml_overrides:
+  train_label_folder: train/labels5
+  val_label_folder: valid/labels5

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>YOLO Layer Visualizer Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#1a2234",
+                        "accent-glow": "#3b82f6",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .heatmap-gradient {
+            background: linear-gradient(90deg, #0000ff 0%, #00ffff 25%, #00ff00 50%, #ffff00 75%, #ff0000 100%);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1a2234;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-6 py-4 bg-background-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<span class="material-symbols-outlined text-3xl">view_in_ar</span>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">YOLO Visualizer</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Models</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Datasets</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Architecture</a>
+<a class="text-slate-600 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors" href="#">Documentation</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="hidden sm:flex items-center bg-slate-100 dark:bg-surface-dark rounded-lg px-3 py-1.5 border border-slate-200 dark:border-slate-700">
+<span class="material-symbols-outlined text-slate-400 text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-500 w-48" placeholder="Search parameters..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+                        Deploy Model
+                    </button>
+<div class="size-10 rounded-full border-2 border-primary/50 overflow-hidden bg-slate-200 dark:bg-surface-dark">
+<img class="w-full h-full object-cover" data-alt="User profile avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3qVkk5ZV4c7FNsWLG9AdZ_q6HkxulyGE_QgZgrHXuRrpamV79-W9QyiIDljgBEDMy3XgxOTrHBb09GVNzg-7jaBgL5UyHiX0Q20fMrhmZXyF9K0GRJ7XpUZLQPRWdMmpU7SGV2THsC1Ll26lgzeOT7_OO9UVHKN7ltBMnOZdZtO7RS6frYL3UU3otxjnRX_NlCFE9NwtF096_4lNVJK8_zaxjjjVA_Smrol0pS6JeU_nQQU4WCeZfCzhijYLN9tHsyPMnHRDzFA"/>
+</div>
+</div>
+</header>
+<main class="flex-1 p-6 md:p-10 max-w-7xl mx-auto w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<aside class="lg:col-span-3 space-y-6">
+<div class="bg-slate-50 dark:bg-surface-dark p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-4 mb-6">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">memory</span>
+</div>
+<div>
+<h3 class="font-bold text-slate-900 dark:text-white">YOLOv8-Nano</h3>
+<p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-widest font-semibold">Running on CUDA 12.1</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary rounded-lg transition-all group" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary/10 text-primary rounded-lg border-l-4 border-primary transition-all" href="#">
+<span class="material-symbols-outlined text-lg">layers</span>
+<span class="text-sm font-medium">Layer Visualizer</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg">equalizer</span>
+<span class="text-sm font-medium">Weight Histograms</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<span class="text-sm font-medium">Inference Logs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-primary/10 hover:text-primary rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="text-sm font-medium">Hyperparameters</span>
+</a>
+</nav>
+</div>
+<div class="bg-gradient-to-br from-primary/20 to-transparent p-5 rounded-xl border border-primary/20">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white mb-2">Real-time Metrics</h4>
+<div class="space-y-3">
+<div class="flex justify-between text-xs">
+<span class="text-slate-500">Inference Time</span>
+<span class="text-primary font-bold">12.4ms</span>
+</div>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-slate-500">Confidence Score</span>
+<span class="text-green-500 font-bold">0.94</span>
+</div>
+</div>
+</div>
+</aside>
+<section class="lg:col-span-9 space-y-8">
+<div>
+<h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Layer-by-Layer Visualizer</h1>
+<p class="text-slate-600 dark:text-slate-400 mt-2">Real-time feature map extraction and Grad-CAM visualization of the inference pipeline.</p>
+</div>
+<div class="bg-slate-50 dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-slate-800 p-6 overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">image</span>
+                                    Input Sample
+                                </h2>
+<span class="bg-green-500/10 text-green-500 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-widest">Active Inference</span>
+</div>
+<div class="relative group rounded-xl overflow-hidden aspect-video bg-slate-200 dark:bg-slate-900">
+<img class="w-full h-full object-cover" data-alt="Street scene with cars and pedestrians for object detection" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF-6T6NIJPXCgMXflzRxuUTxMCViPXkZgpMnkUX2CJt4CgjEzgBKOQCeGPPdkWjgK0CTaNPYD2QiHN1aod9UX_eGMoGitdqdhuekzm_yhSZ2YJ7UdxJoHLsLGvWXQd7zMGvZyYcChP27YIYUh9BVi_ZnUQL3pCJpmdj1K-Z-bkv2q9ZDwg9mlRPT6f7d1IulHlOq8Fvua4A5iujdB5nQGCiEX9_-Y3mRbsdWtgFRxBU5DIaurJujwbc3YhA7fU0sfjS2R64D7AGw"/>
+<div class="absolute inset-0 border-[3px] border-primary/40 pointer-events-none"></div>
+<div class="absolute top-4 left-4 bg-primary/80 backdrop-blur-md px-3 py-1 rounded text-xs font-bold text-white uppercase tracking-widest">Original Feed</div>
+<div class="absolute bottom-4 right-4 flex gap-2">
+<button class="bg-white/10 backdrop-blur-md hover:bg-white/20 p-2 rounded-lg transition-all">
+<span class="material-symbols-outlined text-white">zoom_in</span>
+</button>
+<button class="bg-white/10 backdrop-blur-md hover:bg-white/20 p-2 rounded-lg transition-all">
+<span class="material-symbols-outlined text-white">grid_view</span>
+</button>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">timeline</span>
+                                    Feature Extraction Timeline
+                                </h2>
+<div class="flex items-center gap-4 text-xs font-semibold uppercase tracking-widest text-slate-500">
+<div class="flex items-center gap-2"><div class="size-2 rounded-full bg-blue-600"></div> Low Activity</div>
+<div class="flex items-center gap-2"><div class="size-2 rounded-full bg-red-600"></div> High Salience</div>
+</div>
+</div>
+<div class="flex overflow-x-auto gap-6 pb-6 custom-scrollbar snap-x">
+<div class="flex-shrink-0 w-64 snap-start">
+<div class="mb-3 flex justify-between items-end">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">LAYER 0</span>
+<span class="text-[10px] text-slate-500 font-mono">3x640x640</span>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 aspect-square group shadow-xl">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent z-10"></div>
+<img class="w-full h-full object-cover grayscale opacity-50" data-alt="Input layer preprocessed image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaZ_npNwv6R4zsVpvDHdUu16MO1e4-ZK86Qt0WCXcM0tXmnk-RY9M4lVDgvB1KjmL9RcheF-D5Z7Q7AgdPpcxiYvkIcYH3FF9DS3NK5DRNCdg1oQt6kHcleAtAHTk6tEKc_p4fL9DY7h9u435fwCPwY3VraBi6oSLC3kqcTCUafyCOEcmO5Q455LN1_m_iBXGfEE2-vJmvfp9r7prdT5Bp8_th8-W-bg-r8u8qESmYxGs2uIVpjbBc56zt01YR5vT2H5RSBnHYcA"/>
+<div class="absolute inset-0 bg-primary/20 z-0"></div>
+<div class="absolute bottom-4 left-4 z-20">
+<p class="text-white font-bold text-sm">Input Layer</p>
+<p class="text-slate-300 text-[10px]">Pre-processed &amp; Scaled</p>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-64 snap-start">
+<div class="mb-3 flex justify-between items-end">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">LAYER 2</span>
+<span class="text-[10px] text-slate-500 font-mono">16x320x320</span>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 aspect-square shadow-xl">
+<div class="absolute inset-0 flex items-center justify-center bg-slate-900">
+<div class="w-full h-full bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-900 p-4 grid grid-cols-4 gap-1 opacity-80">
+<div class="bg-blue-500/30 rounded-sm"></div><div class="bg-blue-400/20 rounded-sm"></div><div class="bg-blue-500/30 rounded-sm"></div><div class="bg-blue-600/40 rounded-sm"></div>
+<div class="bg-blue-400/20 rounded-sm"></div><div class="bg-blue-700/50 rounded-sm"></div><div class="bg-blue-500/30 rounded-sm"></div><div class="bg-blue-400/20 rounded-sm"></div>
+<div class="bg-blue-500/30 rounded-sm"></div><div class="bg-blue-400/20 rounded-sm"></div><div class="bg-blue-800/60 rounded-sm"></div><div class="bg-blue-500/30 rounded-sm"></div>
+<div class="bg-blue-600/40 rounded-sm"></div><div class="bg-blue-500/30 rounded-sm"></div><div class="bg-blue-400/20 rounded-sm"></div><div class="bg-blue-700/50 rounded-sm"></div>
+</div>
+<div class="absolute inset-0 p-8">
+<div class="w-full h-full border-2 border-dashed border-blue-400/40 rounded-full animate-pulse"></div>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<p class="text-white font-bold text-sm">Edge Detectors</p>
+<p class="text-slate-300 text-[10px]">Early Conv Layers</p>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-64 snap-start">
+<div class="mb-3 flex justify-between items-end">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">LAYER 12</span>
+<span class="text-[10px] text-slate-500 font-mono">128x80x80</span>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 aspect-square shadow-xl">
+<div class="absolute inset-0 bg-[#000033]">
+<div class="w-full h-full p-2 grid grid-cols-2 gap-2">
+<div class="bg-gradient-to-br from-blue-900 to-green-500 rounded-lg"></div>
+<div class="bg-gradient-to-tr from-blue-900 to-cyan-500 rounded-lg"></div>
+<div class="bg-gradient-to-bl from-blue-900 to-teal-500 rounded-lg"></div>
+<div class="bg-gradient-to-tl from-indigo-900 to-emerald-500 rounded-lg"></div>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<p class="text-white font-bold text-sm">Texture Patterns</p>
+<p class="text-slate-300 text-[10px]">Backbone Middle</p>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-64 snap-start">
+<div class="mb-3 flex justify-between items-end">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">LAYER 21</span>
+<span class="text-[10px] text-slate-500 font-mono">512x20x20</span>
+</div>
+<div class="relative rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 aspect-square shadow-xl">
+<div class="absolute inset-0 bg-slate-900 p-4">
+<div class="w-full h-full rounded-full bg-gradient-to-r from-blue-800 via-yellow-500 to-red-600 blur-xl opacity-70"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="size-32 border border-yellow-500/50 rounded-lg rotate-45 flex items-center justify-center">
+<div class="size-16 bg-red-600/40 rounded-full blur-md"></div>
+</div>
+</div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<p class="text-white font-bold text-sm">Semantic Parts</p>
+<p class="text-slate-300 text-[10px]">Deep Neck Layers</p>
+</div>
+</div>
+</div>
+<div class="flex-shrink-0 w-64 snap-start">
+<div class="mb-3 flex justify-between items-end">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">HEAD</span>
+<span class="text-[10px] text-slate-500 font-mono">80x20x20</span>
+</div>
+<div class="relative rounded-xl overflow-hidden border-2 border-primary/50 aspect-square shadow-2xl shadow-primary/20 group">
+<div class="absolute inset-0 bg-slate-950">
+<div class="absolute top-1/4 left-1/4 size-16 bg-red-600 rounded-full blur-2xl opacity-80 animate-pulse"></div>
+<div class="absolute bottom-1/3 right-1/4 size-12 bg-orange-500 rounded-full blur-xl opacity-60"></div>
+<div class="absolute top-1/2 right-1/3 size-20 bg-yellow-400 rounded-full blur-3xl opacity-40"></div>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-4">
+<p class="text-primary font-black text-sm uppercase tracking-tighter">Prediction Head</p>
+<p class="text-slate-300 text-[10px]">Objectness Heatmap</p>
+</div>
+<div class="absolute top-2 right-2 bg-primary px-1.5 py-0.5 rounded text-[8px] font-bold text-white">HEAD_0</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-slate-50 dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+<h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span>
+                                    Visualizer Legend
+                                </h3>
+<div class="space-y-4">
+<div class="flex items-center gap-4">
+<div class="h-4 w-32 rounded-full heatmap-gradient"></div>
+<span class="text-xs text-slate-500 font-medium">Salience Intensity (CAM)</span>
+</div>
+<div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        The colors represent the gradient-weighted class activation mapping (Grad-CAM). 
+                                        <span class="text-red-500 font-bold">Red areas</span> indicate regions of the image that the model is heavily weighting for its final prediction.
+                                    </div>
+</div>
+</div>
+<div class="bg-slate-50 dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+<h3 class="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">analytics</span>
+                                    Layer Stats
+                                </h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+<p class="text-[10px] text-slate-500 uppercase">Total Layers</p>
+<p class="text-lg font-bold text-primary">225</p>
+</div>
+<div class="bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+<p class="text-[10px] text-slate-500 uppercase">Params</p>
+<p class="text-lg font-bold text-primary">3.2M</p>
+</div>
+<div class="bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+<p class="text-[10px] text-slate-500 uppercase">FLOPs</p>
+<p class="text-lg font-bold text-primary">8.7G</p>
+</div>
+<div class="bg-white dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+<p class="text-[10px] text-slate-500 uppercase">Memory</p>
+<p class="text-lg font-bold text-primary">420MB</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<footer class="border-t border-slate-200 dark:border-slate-800 py-8 px-6 bg-slate-50 dark:bg-background-dark/50">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex items-center gap-2 opacity-50">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="text-xs font-medium">Neural Engine v2.4.0</span>
+</div>
+<p class="text-xs text-slate-500">© 2024 YOLO Layer Visualizer. All detection masks generated in real-time.</p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">help</span></a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">bug_report</span></a>
+<a class="text-slate-400 hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">share</span></a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

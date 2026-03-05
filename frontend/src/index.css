@@ -1,0 +1,115 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  /* Grid background — 30px terminal grid */
+  .bg-grid {
+    background-image:
+      linear-gradient(#1a1a1a 1px, transparent 1px),
+      linear-gradient(90deg, #1a1a1a 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* Crosshair corner decorations */
+  .crosshair-corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: #ffffff;
+  }
+  .crosshair-tl {
+    top: 0;
+    left: 0;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+  .crosshair-tr {
+    top: 0;
+    right: 0;
+    border-top: 1px solid;
+    border-right: 1px solid;
+  }
+  .crosshair-bl {
+    bottom: 0;
+    left: 0;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+  }
+  .crosshair-br {
+    bottom: 0;
+    right: 0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  /* Glitch border corners (upload box) */
+  .glitch-border::before,
+  .glitch-border::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid #ffffff;
+  }
+  .glitch-border::before {
+    top: -1px;
+    left: -1px;
+    border-right: none;
+    border-bottom: none;
+  }
+  .glitch-border::after {
+    bottom: -1px;
+    right: -1px;
+    border-left: none;
+    border-top: none;
+  }
+
+  /* Scrollbar hide */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Flat tile hover effect for pipeline grid */
+  .flat-container {
+    transform-style: flat;
+  }
+  .flat-tile {
+    transition: transform 0.3s ease;
+  }
+  .flat-tile:hover {
+    transform: scale(1.15);
+    z-index: 20;
+  }
+
+  /* Hex scroll mask */
+  .hex-scroll-container {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black 10%,
+      black 90%,
+      transparent
+    );
+  }
+}
+
+html,
+body {
+  @apply font-display text-slate-100 antialiased overflow-hidden bg-black;
+  font-family: "Space Grotesk", sans-serif;
+}

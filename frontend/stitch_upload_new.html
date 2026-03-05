@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>36-Layer Intensive Monochrome Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#FFFFFF",
+                        "secondary": "#A3A3A3",
+                        "background-light": "#000000",
+                        "background-dark": "#000000",
+                        "electric-blue": "#00E5FF",
+                        "neon-pink": "#FF00FF"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    animation: {
+                        'scanline': 'scanline 4s linear infinite',
+                        'flicker': 'flicker 2s infinite',
+                        'flow-down': 'flow-down 2s linear infinite',
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scroll-hex': 'scroll-hex 10s linear infinite',
+                        'pulse-fast': 'pulse-glow 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' }
+                        },
+                        flicker: {
+                            '0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100%': { opacity: 0.99 },
+                            '20%, 21.999%, 63%, 63.999%, 65%, 69.999%': { opacity: 0.4 }
+                        },
+                        'flow-down': {
+                            '0%': { transform: 'translateY(-100%)', opacity: 0 },
+                            '50%': { opacity: 1 },
+                            '100%': { transform: 'translateY(100%)', opacity: 0 }
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 1 },
+                            '50%': { opacity: .3 }
+                        },
+                        'scroll-hex': {
+                            '0%': { transform: 'translateY(0)' },
+                            '100%': { transform: 'translateY(-50%)' }
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body { background-color: #000000; }
+        .bg-grid {
+            background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .flat-container {transform-style: flat;
+        }
+        .flat-tile {
+            transition: transform 0.3s ease;
+        }
+        .flat-tile:hover {
+            transform: scale(1.1);
+            z-index: 20;
+        }
+        .fiber-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #00E5FF, transparent);
+            height: 2px;
+            box-shadow: 0 0 10px #00E5FF;
+            opacity: 0.6;
+        }
+        .fiber-line-v {
+            position: absolute;
+            background: linear-gradient(180deg, transparent, #00E5FF, transparent);
+            width: 2px;
+            box-shadow: 0 0 10px #00E5FF;
+            opacity: 0.6;
+        }
+        .hex-scroll-container {
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+    </style>
+</head>
+<body class="bg-black text-slate-100 font-display min-h-screen">
+<div class="bg-grid relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="fixed top-4 left-4 text-white/50 text-[10px] font-mono z-0 pointer-events-none tracking-widest">SYS.INIT.V8.0 // 192.168.1.1 // L-36_ACTIVE</div>
+<div class="fixed top-4 right-4 text-white/50 text-[10px] font-mono z-0 pointer-events-none tracking-widest text-right">NET_UPLINK // ACTIVE<br/>PING: 12ms</div>
+<div class="fixed bottom-4 left-4 text-white/50 text-[10px] font-mono z-0 pointer-events-none tracking-widest">LAT: 34.0522 N // LNG: 118.2437 W</div>
+<div class="fixed bottom-4 right-4 text-white/50 text-[10px] font-mono z-0 pointer-events-none tracking-widest text-right">[SECURE_CONNECTION_ESTABLISHED]<br/>MEM: 0x8F4A2</div>
+<div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-electric-blue to-transparent opacity-50"></div>
+<div class="fixed bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-electric-blue to-transparent opacity-50"></div>
+<div class="fixed top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-white to-transparent opacity-20"></div>
+<div class="fixed top-0 right-0 w-1 h-full bg-gradient-to-b from-transparent via-white to-transparent opacity-20"></div>
+<div class="fixed left-6 top-24 bottom-24 w-40 flex flex-col justify-between hidden xl:flex text-slate-400 font-mono text-[10px] z-20 pointer-events-none">
+<div class="flex flex-col gap-1 border-l border-white/20 pl-3 relative">
+<div class="absolute -left-[1.5px] top-0 h-4 w-[3px] bg-electric-blue shadow-[0_0_8px_#00E5FF]"></div>
+<div class="text-white mb-2 uppercase tracking-widest border-b border-white/20 pb-1 w-full flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-electric-blue">terminal</span>
+                    Neural Stream
+                </div>
+<div class="truncate text-white/80">INIT_MODEL_36L...</div>
+<div class="truncate text-white/80">LOADING_WEIGHTS_V8...</div>
+<div class="truncate text-white/70">SOCKET_CONNECTED...</div>
+<div class="truncate text-white/70">AUTH_OK...</div>
+<div class="truncate text-white/60">AWAITING_UPLINK...</div>
+<div class="truncate text-white/60">MEM_ALLOC_READY...</div>
+<div class="truncate text-electric-blue animate-pulse-glow">SYSTEM_STANDBY_0x00</div>
+</div>
+<div class="flex flex-col h-40 border-l border-white/20 relative pl-2 py-2 text-[8px] justify-between text-white/40 hex-scroll-container overflow-hidden">
+<div class="absolute -left-[1.5px] top-1/2 h-8 w-[3px] bg-white -translate-y-1/2"></div>
+<div class="flex flex-col animate-scroll-hex">
+<div>0x7F 0x0A 0x1B 0x4C</div>
+<div>0x92 0xFF 0x00 0x3D</div>
+<div>0x11 0x22 0x33 0x44</div>
+<div>0xAA 0xBB 0xCC 0xDD</div>
+<div>0x01 0x02 0x03 0x04</div>
+<div>0xFF 0xEE 0xDD 0xCC</div>
+<div>0x1A 0x2B 0x3C 0x4D</div>
+<div>0x5E 0x6F 0x70 0x81</div>
+<div>0x7F 0x0A 0x1B 0x4C</div>
+<div>0x92 0xFF 0x00 0x3D</div>
+<div>0x11 0x22 0x33 0x44</div>
+<div>0xAA 0xBB 0xCC 0xDD</div>
+</div>
+</div>
+<div class="flex flex-col items-start gap-2 border-l border-white/20 pl-3 relative">
+<div class="absolute -left-[1.5px] bottom-0 h-4 w-[3px] bg-electric-blue shadow-[0_0_8px_#00E5FF]"></div>
+<div class="text-white mb-1 uppercase tracking-widest border-b border-white/20 pb-1 w-full text-left flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-electric-blue">memory</span>
+                    Sys Diag
+                </div>
+<div class="relative size-16 mt-2">
+<svg class="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+<circle class="stroke-white/20" cx="18" cy="18" fill="none" r="16" stroke-width="1.5"></circle>
+<circle class="stroke-white" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="35" stroke-width="1.5"></circle>
+<circle class="stroke-white/20" cx="18" cy="18" fill="none" r="12" stroke-width="1"></circle>
+<circle class="stroke-electric-blue" cx="18" cy="18" fill="none" r="12" stroke-dasharray="75" stroke-dashoffset="50" stroke-width="1"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center text-white text-[8px] font-bold">65%</div>
+</div>
+</div>
+</div>
+<div class="fixed right-6 top-24 bottom-24 w-40 flex flex-col justify-between hidden xl:flex text-slate-400 font-mono text-[10px] z-20 pointer-events-none items-end text-right">
+<div class="flex flex-col gap-2 border-r border-white/20 pr-3 relative items-end w-full">
+<div class="absolute -right-[1.5px] top-0 h-4 w-[3px] bg-electric-blue shadow-[0_0_8px_#00E5FF]"></div>
+<div class="text-white mb-2 uppercase tracking-widest border-b border-white/20 pb-1 w-full text-right flex items-center justify-end gap-2">
+                    Arch.Tree
+                    <span class="material-symbols-outlined text-[14px] text-electric-blue">account_tree</span>
+</div>
+<div class="flex flex-col items-end gap-1 w-full">
+<div class="border border-white/30 px-2 py-0.5 text-[8px] rounded-sm bg-black z-10 text-white">L0-L12: BACKBONE</div>
+<div class="w-[1px] h-3 bg-white/30 mr-8"></div>
+<div class="border border-white/30 px-2 py-0.5 text-[8px] rounded-sm bg-black z-10 text-white">L13-L22: NECK</div>
+<div class="w-[1px] h-3 bg-white/30 mr-8"></div>
+<div class="border border-white/30 px-2 py-0.5 text-[8px] rounded-sm bg-black z-10 text-white">L23-L35: HEAD</div>
+<div class="w-[1px] h-3 bg-white/30 mr-8"></div>
+<div class="border border-electric-blue/50 px-2 py-0.5 text-[8px] rounded-sm bg-electric-blue/10 z-10 text-electric-blue shadow-[0_0_5px_rgba(0,229,255,0.3)]">OUTPUT_NODES</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 border-r border-white/20 pr-3 relative items-end w-full">
+<div class="absolute -right-[1.5px] bottom-0 h-4 w-[3px] bg-white shadow-[0_0_8px_#FFFFFF]"></div>
+<div class="text-white mb-2 uppercase tracking-widest border-b border-white/20 pb-1 w-full text-right flex items-center justify-end gap-2">
+                    GPU Perf
+                    <span class="material-symbols-outlined text-[14px] text-electric-blue">speed</span>
+</div>
+<div class="h-16 w-full flex items-end justify-end gap-[2px]">
+<div class="w-1.5 bg-white/30 h-[20%]"></div>
+<div class="w-1.5 bg-white/30 h-[35%]"></div>
+<div class="w-1.5 bg-white/40 h-[25%]"></div>
+<div class="w-1.5 bg-white/30 h-[40%]"></div>
+<div class="w-1.5 bg-white/50 h-[65%]"></div>
+<div class="w-1.5 bg-white/40 h-[50%]"></div>
+<div class="w-1.5 bg-white/60 h-[85%]"></div>
+<div class="w-1.5 bg-electric-blue h-[95%] animate-pulse-fast shadow-[0_0_8px_#00E5FF]"></div>
+<div class="w-1.5 bg-white/50 h-[60%]"></div>
+<div class="w-1.5 bg-white/40 h-[45%]"></div>
+<div class="w-1.5 bg-white/30 h-[30%]"></div>
+<div class="w-1.5 bg-white/30 h-[20%]"></div>
+</div>
+<div class="text-[8px] text-electric-blue mt-1 font-bold">VRAM: 14.2/16 GB</div>
+</div>
+</div>
+<div class="layout-container flex h-full grow flex-col relative z-10 pl-48 pr-56 py-8">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-white/20 pb-4 mb-8">
+<div class="flex items-center gap-4 text-white">
+<div class="size-6 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]">
+<span class="material-symbols-outlined text-2xl">visibility</span>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight uppercase tracking-[0.2em] drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">VisionAI Lab</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-3">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-electric-blue opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-electric-blue shadow-[0_0_8px_rgba(0,229,255,0.8)]"></span>
+</span>
+<span class="text-electric-blue text-xs font-mono uppercase tracking-widest border border-electric-blue/50 bg-electric-blue/10 px-3 py-1 rounded-sm shadow-[0_0_10px_rgba(0,229,255,0.2)]">Model: Custom YOLOv8-36L</span>
+</div>
+</div>
+</header>
+<div class="flex flex-1 gap-8 w-full flex-col xl:flex-row">
+<div class="flex flex-col w-full xl:w-1/3 shrink-0">
+<div class="flex items-center gap-4 mb-4">
+<button class="flex items-center gap-2 text-white/60 hover:text-white hover:drop-shadow-[0_0_5px_#fff] transition-all text-xs font-mono uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>New Image</span>
+</button>
+<div class="flex-1"></div>
+<div class="border border-white/30 bg-white/5 px-2 py-0.5 rounded-md text-white text-[10px] font-mono">INPUT: 416x416</div>
+</div>
+<div class="border border-white/30 rounded-lg relative group overflow-hidden bg-black p-2 w-full aspect-square shadow-[0_0_20px_rgba(0,229,255,0.1)]">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-electric-blue/20 to-transparent animate-scanline pointer-events-none z-10">
+<div class="w-full h-[2px] bg-electric-blue shadow-[0_0_15px_rgba(0,229,255,1)]"></div>
+</div>
+<div class="absolute inset-0 border-[1px] border-white/10 m-4 pointer-events-none">
+<div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-white/50"></div>
+<div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-white/50"></div>
+<div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-white/50"></div>
+<div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-white/50"></div>
+</div>
+<img alt="Input image for detection" class="w-full h-full object-cover rounded opacity-80 group-hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiC6v9jLHG0N8S-TNs9emaodJwi8gmfbjGp5OW0GdZn0OMQWX2pEJgxsJ_HVDpyp_1sk_LlBXTqglLbC50_BjXcZVAES_zJOwgOlg2GHymn0w0kHnXq90fLK5b3FVPXjwuJQBBm07K8zjYS3vgal2AkeiepRwFSMh1QYZW3gFZSxrgW2b-3_iGEQMeSPmYb6_SET3nIrZqs9kSoz2Lt1Nzuu1RdHzi_wadYJNJOeJmecjXwzWZfiZwjaKSGDjBm08gHOl96NVgvuZt"/>
+<div class="absolute inset-0 p-2 pointer-events-none z-20">
+<div class="absolute left-[20%] top-[30%] w-[25%] h-[50%] border-2 border-[#39FF14] shadow-[0_0_8px_#39FF14]">
+<div class="absolute -top-4 left-[-2px] bg-[#39FF14]/20 border border-[#39FF14] text-[#39FF14] px-1 py-0.5 text-[8px] font-mono whitespace-nowrap backdrop-blur-sm leading-none flex items-center gap-1">PERSON <span class="text-white">0.98</span></div>
+</div>
+<div class="absolute left-[55%] top-[40%] w-[15%] h-[35%] border-2 border-[#00FFFF] shadow-[0_0_8px_#00FFFF]">
+<div class="absolute -top-4 left-[-2px] bg-[#00FFFF]/20 border border-[#00FFFF] text-[#00FFFF] px-1 py-0.5 text-[8px] font-mono whitespace-nowrap backdrop-blur-sm leading-none flex items-center gap-1">PACKAGE <span class="text-white">0.92</span></div>
+</div>
+<div class="absolute left-[75%] top-[25%] w-[18%] h-[60%] border-2 border-[#00E5FF] shadow-[0_0_8px_#00E5FF]">
+<div class="absolute -top-4 left-[-2px] bg-[#00E5FF]/20 border border-[#00E5FF] text-[#00E5FF] px-1 py-0.5 text-[8px] font-mono whitespace-nowrap backdrop-blur-sm leading-none flex items-center gap-1">VEHICLE <span class="text-white">0.87</span></div>
+</div>
+<div class="absolute left-[10%] top-[65%] w-[30%] h-[20%] border-2 border-[#FFBF00] shadow-[0_0_8px_#FFBF00]">
+<div class="absolute -top-4 left-[-2px] bg-[#FFBF00]/20 border border-[#FFBF00] text-[#FFBF00] px-1 py-0.5 text-[8px] font-mono whitespace-nowrap backdrop-blur-sm leading-none flex items-center gap-1">LUGGAGE <span class="text-white">0.95</span></div>
+</div>
+<div class="absolute left-[40%] top-[15%] w-[12%] h-[15%] border-2 border-[#FF00FF] shadow-[0_0_8px_#FF00FF]">
+<div class="absolute -top-4 left-[-2px] bg-[#FF00FF]/20 border border-[#FF00FF] text-[#FF00FF] px-1 py-0.5 text-[8px] font-mono whitespace-nowrap backdrop-blur-sm leading-none flex items-center gap-1">DRONE <span class="text-white">0.89</span></div>
+</div>
+</div>
+</div>
+<div class="w-full mt-8 border border-white/20 rounded-lg bg-black/80 backdrop-blur-md p-4 flex flex-col gap-3 relative z-20 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+<div class="text-white/60 text-[10px] font-mono tracking-widest uppercase mb-1 flex items-center gap-2 border-b border-white/10 pb-2">
+<span class="material-symbols-outlined text-[14px]">analytics</span>
+                        Live Statistics
+                    </div>
+<div class="flex justify-between items-center text-[10px] font-mono">
+<span class="text-white/80">Inference Time</span>
+<span class="text-electric-blue drop-shadow-[0_0_5px_#00E5FF]">18.4ms</span>
+</div>
+<div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-electric-blue w-[40%] shadow-[0_0_10px_rgba(0,229,255,0.8)] relative">
+<div class="absolute inset-0 bg-white/30 w-full animate-pulse-fast"></div>
+</div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-mono mt-2">
+<span class="text-white/80">VRAM Usage</span>
+<span class="text-white font-bold">2.4GB / 16GB</span>
+</div>
+<div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-white w-[15%] shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse-glow"></div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-mono mt-2">
+<span class="text-white/80">Active Layers</span>
+<span class="text-electric-blue">36 / 36</span>
+</div>
+<div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-electric-blue w-full shadow-[0_0_10px_rgba(0,229,255,0.5)]"></div>
+</div>
+</div>
+<div class="w-full mt-4 border border-white/20 rounded-lg bg-black/80 backdrop-blur-md p-4 flex flex-col gap-3 relative z-20 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+<div class="text-white/60 text-[10px] font-mono tracking-widest uppercase mb-1 flex items-center gap-2 border-b border-white/10 pb-2">
+<span class="material-symbols-outlined text-[14px]">list_alt</span>
+                        Detection Log
+                    </div>
+<div class="flex flex-col gap-2 text-[10px] font-mono text-white/80">
+<div class="flex items-center gap-2"><span class="text-[#39FF14]">&gt;</span> PERSON [0.98]</div>
+<div class="flex items-center gap-2"><span class="text-[#00FFFF]">&gt;</span> PACKAGE [0.92]</div>
+<div class="flex items-center gap-2"><span class="text-[#00E5FF]">&gt;</span> VEHICLE [0.87]</div>
+<div class="flex items-center gap-2"><span class="text-[#FFBF00]">&gt;</span> LUGGAGE [0.95]</div>
+<div class="flex items-center gap-2"><span class="text-[#FF00FF]">&gt;</span> DRONE [0.89]</div>
+</div>
+<div class="border-t border-white/10 pt-2 mt-1">
+<div class="text-white font-bold text-[10px] font-mono">TOTAL DETECTIONS: 5</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col flex-1 min-w-0 bg-transparent relative w-full items-center justify-center overflow-visible mt-10 xl:mt-0">
+<div class="absolute top-0 text-[14px] font-bold tracking-[0.3em] text-white/80 uppercase border-b border-white/30 pb-2 w-3/4 text-center z-20 flex items-center justify-center gap-4">
+<span class="w-12 h-[1px] bg-electric-blue shadow-[0_0_5px_#00E5FF]"></span>
+                    36-Layer Pipeline Flow
+                    <span class="w-12 h-[1px] bg-electric-blue shadow-[0_0_5px_#00E5FF]"></span>
+</div>
+<div class="flex items-center justify-center w-full relative mt-16 pb-10">
+<div class="z-10 relative flat-container w-[480px] h-[480px] mx-auto bg-black/40 border border-white/10 rounded-xl shadow-[0_0_50px_rgba(0,229,255,0.05)]" style="transform: perspective(1000px) rotateX(15deg) scale(1.15);">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 480 480">
+<path class="opacity-80 drop-shadow-[0_0_10px_#00E5FF] animate-pulse-glow" d="M 40,40 L 440,40 L 440,120 L 40,120 L 40,200 L 440,200 L 440,280 L 40,280 L 40,360 L 440,360 L 440,440 L 40,440" fill="none" stroke="#00E5FF" stroke-linejoin="round" stroke-width="3"></path>
+</svg>
+<div class="absolute -left-12 top-[60px] text-[10px] text-white/80 font-mono tracking-[0.3em] uppercase rotate-[-90deg] whitespace-nowrap drop-shadow-[0_0_5px_#FFFFFF]">Backbone</div>
+<div class="absolute -left-8 top-[220px] text-[10px] text-electric-blue font-mono tracking-[0.3em] uppercase rotate-[-90deg] whitespace-nowrap drop-shadow-[0_0_5px_#00E5FF]">Neck</div>
+<div class="absolute -left-8 top-[380px] text-[10px] text-white/80 font-mono tracking-[0.3em] uppercase rotate-[-90deg] whitespace-nowrap drop-shadow-[0_0_5px_#FFFFFF]">Head</div>
+<div class="flex flex-col w-full h-full justify-between z-10 relative px-4 py-4">
+<div class="flex flex-row justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L0</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L1</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L2</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L3</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L4</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L5</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+</div>
+<div class="flex flex-row-reverse justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L6</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L7</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L8</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L9</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L10</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-electric-blue transition-colors">L11</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+</div>
+<div class="flex flex-row justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.5)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L12</div>
+<div class="w-6 h-6 bg-electric-blue/50 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/60 rounded shadow-[0_0_15px_rgba(0,229,255,0.4)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/60 group-hover:text-electric-blue transition-colors">L13</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/60 rounded shadow-[0_0_15px_rgba(0,229,255,0.4)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/60 group-hover:text-electric-blue transition-colors">L14</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/50 rounded shadow-[0_0_15px_rgba(255,255,255,0.2)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/60 group-hover:text-white transition-colors">L15</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/50 rounded shadow-[0_0_15px_rgba(255,255,255,0.2)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/60 group-hover:text-white transition-colors">L16</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/60 rounded shadow-[0_0_15px_rgba(0,229,255,0.4)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/60 group-hover:text-electric-blue transition-colors">L17</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+</div>
+<div class="flex flex-row-reverse justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/60 rounded shadow-[0_0_15px_rgba(0,229,255,0.4)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/60 group-hover:text-electric-blue transition-colors">L18</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/50 rounded shadow-[0_0_15px_rgba(255,255,255,0.2)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/60 group-hover:text-white transition-colors">L19</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/50 rounded shadow-[0_0_15px_rgba(255,255,255,0.2)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/60 group-hover:text-white transition-colors">L20</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.6)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L21</div>
+<div class="w-6 h-6 bg-electric-blue/40 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.6)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L22</div>
+<div class="w-6 h-6 bg-electric-blue/40 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L23</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+</div>
+<div class="flex flex-row justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L24</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L25</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L26</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L27</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/50 rounded shadow-[0_0_15px_rgba(0,229,255,0.3)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue/80 group-hover:text-electric-blue transition-colors">L28</div>
+<div class="w-6 h-6 bg-electric-blue/30 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L29</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+</div>
+<div class="flex flex-row-reverse justify-between w-full h-12 items-center">
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L30</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-white/40 rounded shadow-[0_0_10px_rgba(255,255,255,0.1)] flat-tile flex items-center justify-center relative group z-10">
+<div class="absolute -top-5 text-[8px] font-mono text-white/50 group-hover:text-white transition-colors">L31</div>
+<div class="w-6 h-6 bg-white/20 rounded-sm"></div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.5)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L32</div>
+<div class="w-6 h-6 bg-electric-blue/50 rounded-sm flex items-center justify-center text-[8px] font-bold text-black">8</div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.5)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L33</div>
+<div class="w-6 h-6 bg-electric-blue/50 rounded-sm flex items-center justify-center text-[8px] font-bold text-black">16</div>
+</div>
+<div class="w-12 h-12 bg-black/80 border border-electric-blue/80 rounded shadow-[0_0_20px_rgba(0,229,255,0.5)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-electric-blue group-hover:text-white transition-colors">L34</div>
+<div class="w-6 h-6 bg-electric-blue/50 rounded-sm flex items-center justify-center text-[8px] font-bold text-black">32</div>
+</div>
+<div class="w-12 h-12 bg-white border-2 border-white rounded shadow-[0_0_25px_rgba(255,255,255,0.8)] flat-tile flex items-center justify-center relative group z-10 animate-pulse-fast">
+<div class="absolute -top-5 text-[8px] font-mono text-white font-bold drop-shadow-[0_0_5px_#FFFFFF] group-hover:text-electric-blue transition-colors">L35</div>
+<span class="material-symbols-outlined text-black text-[18px]">bolt</span>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-[#50C878]/20 border border-[#50C878] text-[#50C878] px-2 py-1 text-[8px] font-mono font-bold whitespace-nowrap rounded shadow-[0_0_15px_rgba(80,200,120,0.6)] animate-pulse-glow z-50">✓ FINAL OUTPUT</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></body></html>

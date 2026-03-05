@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+backend.log
+temp_*
+
+# Node
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large binary files (keeping best.pt as it is required for deployment)
+# best.pt
+
+# User generated content
+# train/images/ (keeping as requested by user)
+
+# Python notebooks
+.ipynb_checkpoints/
+comparison-Copy1.ipynb
+comparison-Copy2.ipynb
+comparison.ipynb
+delete.ipynb
+extract.ipynb
+final5.ipynb
+iamges.ipynb
+
+# ZIP files
+*.zip
+
+# Training runs
+runs/

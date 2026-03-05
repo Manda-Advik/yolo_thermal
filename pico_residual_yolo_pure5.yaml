@@ -1,0 +1,59 @@
+
+# PURE ARCHITECTURE TEST: ~3M parameters (same as YOLOv8n)
+# NO AUGMENTATION - Testing pure architecture capability
+# Key Innovation: Dual Attention (Channel + Spatial)
+
+nc: 5
+depth_multiple: 1.0
+width_multiple: 0.375  # Tuned to match YOLOv8n's ~3M parameters
+
+backbone:
+  - [-1, 1, Conv, [64, 3, 2]]   # 0-P1/2
+  - [-1, 1, Conv, [128, 3, 2]]  # 1-P2/4
+  
+  - [-1, 1, OptimizedResidualBlock, []] # 2
+  - [-1, 1, OptimizedResidualBlock, []] # 3
+  - [-1, 1, OptimizedResidualBlock, []] # 4
+  
+  - [-1, 1, Conv, [256, 3, 2]]  # 5-P3/8
+  
+  - [-1, 1, OptimizedResidualBlock, []] # 6
+  - [-1, 1, OptimizedResidualBlock, []] # 7
+  - [-1, 1, OptimizedResidualBlock, []] # 8
+  - [-1, 1, OptimizedResidualBlock, []] # 9
+  - [-1, 1, OptimizedResidualBlock, []] # 10
+  - [-1, 1, OptimizedResidualBlock, []] # 11
+  
+  - [-1, 1, Conv, [512, 3, 2]]  # 12-P4/16
+  
+  - [-1, 1, OptimizedResidualBlock, []] # 13
+  - [-1, 1, OptimizedResidualBlock, []] # 14
+  - [-1, 1, OptimizedResidualBlock, []] # 15
+  - [-1, 1, OptimizedResidualBlock, []] # 16
+  - [-1, 1, OptimizedResidualBlock, []] # 17
+  - [-1, 1, OptimizedResidualBlock, []] # 18
+  
+  - [-1, 1, Conv, [1024, 3, 2]] # 19-P5/32
+  
+  - [-1, 1, OptimizedResidualBlock, []] # 20
+  - [-1, 1, OptimizedResidualBlock, []] # 21
+  - [-1, 1, OptimizedResidualBlock, []] # 22
+
+head:
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']] # 23
+  - [[-1, 18], 1, Concat, [1]] # 24
+  - [-1, 2, C2f, [192]]      # 25
+  
+  - [-1, 1, nn.Upsample, [None, 2, 'nearest']] # 26
+  - [[-1, 11], 1, Concat, [1]] # 27
+  - [-1, 2, C2f, [96]]       # 28
+  
+  - [-1, 1, Conv, [96, 3, 2]] # 29
+  - [[-1, 25], 1, Concat, [1]] # 30
+  - [-1, 2, C2f, [192]]      # 31
+  
+  - [-1, 1, Conv, [192, 3, 2]] # 32
+  - [[-1, 22], 1, Concat, [1]] # 33
+  - [-1, 2, C2f, [384]]      # 34
+  
+  - [[28, 31, 34], 1, Detect, [nc]] # 35
