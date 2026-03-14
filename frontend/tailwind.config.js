@@ -31,8 +31,8 @@ export default {
       },
       keyframes: {
         scanline: {
-          "0%": { transform: "translateY(-100%)" },
-          "100%": { transform: "translateY(100%)" },
+          "0%": { top: "-20%" },
+          "100%": { top: "120%" },
         },
         flicker: {
           "0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100%": {

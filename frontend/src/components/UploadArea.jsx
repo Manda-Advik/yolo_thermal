@@ -112,7 +112,7 @@ export function UploadArea({
                 <div
                   className="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-none border border-slate-800 group-hover:border-electric-blue group-hover:shadow-[0_0_10px_rgba(0,229,255,0.2)] transition-all overflow-hidden relative grayscale group-hover:grayscale-0 duration-300"
                   style={{
-                    backgroundImage: `url("${API_URL}/train_images/${filename}")`,
+                    backgroundImage: `url("/samples/${filename}")`,
                   }}
                 >
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">

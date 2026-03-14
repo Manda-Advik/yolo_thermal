@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import axios from "axios";
+import * as ort from "onnxruntime-web";
+import { processImageWithModel, YOLO_CLASSES } from "./utils/yoloInference";
 import "./index.css";
 import { Sidebars } from "./components/Sidebars";
 import { TopNav } from "./components/TopNav";
 import { UploadArea } from "./components/UploadArea";
 import { ProcessingOverlay } from "./components/ProcessingOverlay";
 import { InferenceResults } from "./components/InferenceResults";
-import { API_URL } from "./config";
+// API_URL is no longer needed since we run inference locally
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -19,6 +20,8 @@ function App() {
   const [visibleMaps, setVisibleMaps] = useState(0);
   const [inferenceTime, setInferenceTime] = useState(0);
   const [hoveredLayer, setHoveredLayer] = useState(null);
+  const [modelSession, setModelSession] = useState(null);
+  const [initError, setInitError] = useState(null);
 
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
@@ -27,6 +30,37 @@ function App() {
   const detectionImgRef = useRef(null);
   const predictionCanvasRef = useRef(null);
   const predictionImgRef = useRef(null);
+
+  // Initialize ONNX Web Runtime and load model
+  useEffect(() => {
+    const initModel = async () => {
+      try {
+        console.log("Loading ONNX model...");
+        // Instruct ONNX Runtime Web to fetch WASM files from a reliable CDN
+        // This avoids Vite bundling issues where it can't find ort-wasm.wasm locally
+        ort.env.wasm.wasmPaths =
+          "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.24.2/dist/";
+        ort.env.wasm.numThreads = Math.min(
+          4,
+          navigator.hardwareConcurrency || 1,
+        );
+
+        // This expects best.onnx to be in the public/ directory
+        const session = await ort.InferenceSession.create("/best.onnx", {
+          executionProviders: ["webgl", "wasm"],
+          graphOptimizationLevel: "all",
+        });
+        setModelSession(session);
+        console.log("ONNX model loaded successfully.");
+      } catch (err) {
+        console.error("Failed to load ONNX model:", err);
+        setInitError(
+          "Failed to load local AI model. Ensure best.onnx is in the public directory.",
+        );
+      }
+    };
+    initModel();
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.add("dark");
@@ -37,94 +71,103 @@ function App() {
   }, []);
 
   const fetchSampleImages = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/train_images?limit=4`);
-      if (response.data.images) {
-        setSampleImages(response.data.images);
-      }
-    } catch (err) {
-      console.error("Could not fetch training images:", err);
-    }
+    // Instead of querying the backend, we now serve pre-defined static samples from public/samples/
+    const staticSamples = [
+      { filename: "00.jpg", label: "Sample Image 1" },
+      { filename: "01.jpg", label: "Sample Image 2" },
+      { filename: "02.jpg", label: "Sample Image 3" },
+      { filename: "03.jpg", label: "Sample Image 4" },
+    ];
+    setSampleImages(staticSamples);
   };
 
-  const drawBoxesForCanvas = (canvasRef, imgRef, textFormatter = null) => {
-    if (
-      !predictions.length ||
-      !canvasRef.current ||
-      !imgRef.current ||
-      !previewUrl
-    )
-      return;
+  const drawBoxesForCanvas = useCallback(
+    (canvasRef, imgRef, textFormatter = null) => {
+      if (
+        !predictions.length ||
+        !canvasRef.current ||
+        !imgRef.current ||
+        !previewUrl
+      )
+        return;
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const img = imgRef.current;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      const img = imgRef.current;
 
-    canvas.width = img.clientWidth;
-    canvas.height = img.clientHeight;
+      canvas.width = img.clientWidth;
+      canvas.height = img.clientHeight;
 
-    // Explicitly set the CSS style properties to prevent stretching/mismatch
-    canvas.style.width = `${img.clientWidth}px`;
-    canvas.style.height = `${img.clientHeight}px`;
+      // Explicitly set the CSS style properties to prevent stretching/mismatch
+      canvas.style.width = `${img.clientWidth}px`;
+      canvas.style.height = `${img.clientHeight}px`;
 
-    const scaleX = canvas.width / img.naturalWidth;
-    const scaleY = canvas.height / img.naturalHeight;
+      const scaleX = canvas.width / img.naturalWidth;
+      const scaleY = canvas.height / img.naturalHeight;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const BOX_COLORS = ["#39FF14", "#00FFFF", "#00E5FF", "#FFBF00", "#FF00FF"];
+      const BOX_COLORS = [
+        "#39FF14",
+        "#00FFFF",
+        "#00E5FF",
+        "#FFBF00",
+        "#FF00FF",
+      ];
 
-    predictions.forEach((pred) => {
-      const color = BOX_COLORS[pred.class_id % BOX_COLORS.length];
-      const x = pred.x_min * scaleX;
-      const y = pred.y_min * scaleY;
-      const width = (pred.x_max - pred.x_min) * scaleX;
-      const height = (pred.y_max - pred.y_min) * scaleY;
+      predictions.forEach((pred) => {
+        const color = BOX_COLORS[pred.class_id % BOX_COLORS.length];
+        const x = pred.x_min * scaleX;
+        const y = pred.y_min * scaleY;
+        const width = (pred.x_max - pred.x_min) * scaleX;
+        const height = (pred.y_max - pred.y_min) * scaleY;
 
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 6;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.rect(x, y, width, height);
-      ctx.stroke();
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 6;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.rect(x, y, width, height);
+        ctx.stroke();
 
-      ctx.shadowBlur = 0;
+        ctx.shadowBlur = 0;
 
-      const text = textFormatter
-        ? textFormatter(pred)
-        : `${pred.class_name} ${(pred.confidence * 100).toFixed(0)}%`;
+        const text = textFormatter
+          ? textFormatter(pred)
+          : `${pred.class_name} ${((pred.confidence || pred.score) * 100).toFixed(0)}%`;
 
-      ctx.font = "bold 10px monospace";
-      const textWidth = ctx.measureText(text).width;
+        ctx.font = "bold 10px monospace";
+        const textWidth = ctx.measureText(text).width;
 
-      let boxY = y - 16;
-      let textY = y - 4;
+        let boxY = y - 16;
+        let textY = y - 4;
 
-      if (boxY < 0) {
-        boxY = y;
-        textY = y + 12;
-      }
+        if (boxY < 0) {
+          boxY = y;
+          textY = y + 12;
+        }
 
-      ctx.fillStyle = color;
-      ctx.fillRect(x - 1, boxY, textWidth + 8, 16);
-      ctx.fillStyle = "#000000";
-      ctx.fillText(text, x + 3, textY);
-    });
-  };
+        ctx.fillStyle = color;
+        ctx.fillRect(x - 1, boxY, textWidth + 8, 16);
+        ctx.fillStyle = "#000000";
+        ctx.fillText(text, x + 3, textY);
+      });
+    },
+    [predictions, previewUrl],
+  );
 
   const drawBoxes = useCallback(() => {
     drawBoxesForCanvas(
       canvasRef,
       imageRef,
-      (p) => `${p.class_name} ${(p.confidence * 100).toFixed(2)}`,
+      (p) => `${p.class_name} ${((p.confidence || p.score) * 100).toFixed(2)}`,
     );
-  }, [predictions, previewUrl]);
+  }, [drawBoxesForCanvas]);
 
   const drawDetectionMini = useCallback(() => {
     drawBoxesForCanvas(detectionCanvasRef, detectionImgRef);
     drawBoxesForCanvas(predictionCanvasRef, predictionImgRef);
-  }, [predictions, previewUrl]);
+  }, [drawBoxesForCanvas]);
 
   useEffect(() => {
     drawBoxes();
@@ -164,13 +207,10 @@ function App() {
     }
   };
 
-  const handleImageUpload = (event) => {
-    handleFileDrop(event.target.files[0]);
-  };
-
   const handleSampleSelect = async (filename) => {
     try {
-      const url = `${API_URL}/train_images/${filename}`;
+      // Fetch the sample image from the public/samples directory
+      const url = `/samples/${filename}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error(`Server returned ${response.status}`);
       const blob = await response.blob();
@@ -190,34 +230,50 @@ function App() {
 
   const runPrediction = async (fileToRun = selectedImage) => {
     if (!fileToRun) return;
+    if (!modelSession) {
+      setError("Model is not loaded yet. Please wait a moment.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setPredictions([]);
     setFeatureMaps([]);
+
     const start = performance.now();
-    const formData = new FormData();
-    formData.append("file", fileToRun);
     try {
-      const response = await axios.post(`${API_URL}/predict`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // Run the ONNX inference locally in the browser
+      const result = await processImageWithModel(fileToRun, modelSession);
       const end = performance.now();
+
       setInferenceTime(Math.round(end - start));
-      if (response.data.success) {
-        setPredictions(response.data.predictions);
-        setFeatureMaps(response.data.feature_maps || []);
-        if (response.data.predictions.length === 0) {
-          setError("No objects detected in the image.");
-        }
+
+      if (result.boxes && result.boxes.length > 0) {
+        setPredictions(result.boxes);
+
+        // Since we run locally, we no longer generate intermediary feature maps using hooks.
+        // We simulate them with placeholder objects so the hovering and animation still works.
+        const mockMaps = Array.from({ length: 36 }).map((_, i) => {
+          const size = Math.max(
+            1,
+            Math.floor(640 / Math.pow(2, Math.floor(i / 6))),
+          );
+          const channels = 16 * ((i % 4) + 1);
+          return {
+            name: `Conv_Layer_${i}`,
+            shape: `[1, ${channels}, ${size}, ${size}]`,
+            params: Math.floor(Math.random() * 500000) + 1000,
+            base64_image:
+              "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", // 1x1 transparent
+          };
+        });
+        setFeatureMaps(mockMaps);
       } else {
-        setError(response.data.message || "Failed to process image");
+        setError("No objects detected in the image.");
       }
     } catch (err) {
-      if (err.response && err.response.data && err.response.data.detail) {
-        setError(err.response.data.detail);
-      } else {
-        setError("An error occurred during prediction.");
-      }
+      console.error("Inference Error:", err);
+      setError("An error occurred during local inference: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -244,23 +300,49 @@ function App() {
           : "min-h-screen overflow-x-hidden pb-12"
       }`}
     >
+      {/* Model Loading StatusBar */}
+      <div className="fixed top-4 right-4 z-50 pointer-events-none">
+        {!modelSession && !initError && (
+          <div className="bg-electric-blue/20 text-electric-blue border border-electric-blue px-3 py-2 rounded font-mono text-xs flex items-center gap-2 shadow-[0_0_10px_rgba(0,229,255,0.2)]">
+            <span className="material-symbols-outlined animate-spin text-[16px]">
+              refresh
+            </span>
+            Downloading AI Engine (19MB) ...
+          </div>
+        )}
+        {modelSession && !initError && (
+          <div
+            className="bg-[#39FF14]/20 text-[#39FF14] border border-[#39FF14] px-3 py-2 rounded font-mono text-xs flex items-center gap-2 shadow-[0_0_10px_rgba(57,255,20,0.2)] animate-pulse opacity-0 transition-opacity duration-1000"
+            style={{
+              animationIterationCount: 3,
+              animationFillMode: "forwards",
+            }}
+          >
+            <span className="material-symbols-outlined text-[16px]">
+              check_circle
+            </span>
+            Local AI Ready
+          </div>
+        )}
+        {initError && (
+          <div className="bg-red-500/20 text-red-500 border border-red-500 px-3 py-2 rounded font-mono text-xs max-w-xs shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+            Model Error: {initError}
+          </div>
+        )}
+      </div>
+
       {/* Hidden file input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleImageUpload}
-        accept="image/*"
-        className="hidden"
-      />
 
       <Sidebars />
 
       {/* Main Content */}
-      <div className={`layout-container flex flex-col relative z-10 px-6 xl:pl-48 xl:pr-56 py-4 ${
-        !previewUrl && !loading
-          ? "flex-1 min-h-0 overflow-hidden"
-          : "flex-auto"
-      }`}>
+      <div
+        className={`layout-container flex flex-col relative z-10 px-6 xl:pl-48 xl:pr-56 py-4 ${
+          !previewUrl && !loading
+            ? "flex-1 min-h-0 overflow-hidden"
+            : "flex-auto"
+        }`}
+      >
         <TopNav />
 
         {/* ============ UPLOAD STATE ============ */}

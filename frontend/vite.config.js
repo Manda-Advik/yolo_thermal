@@ -4,11 +4,4 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    proxy: {
-      "/api": "http://localhost:8000",
-      "/train_images": "http://localhost:8000",
-      "/predict": "http://localhost:8000",
-    },
-  },
 });

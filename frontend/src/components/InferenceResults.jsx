@@ -17,7 +17,7 @@ export function InferenceResults({
   drawDetectionMini,
 }) {
   // Fixed color per class_id
-  const BOX_COLORS = ["#39FF14", "#00FFFF", "#00E5FF", "#FFBF00", "#FF00FF"];
+  const BOX_COLORS = ["#39FF14", "#00FFFF", "#4b095cff", "#FFBF00", "#FF00FF"];
   const getClassColor = (pred) => BOX_COLORS[pred.class_id % BOX_COLORS.length];
 
   // Redraw prediction boxes whenever the user un-hovers, since the canvas remounts
@@ -76,6 +76,12 @@ export function InferenceResults({
               className="w-full object-cover opacity-80"
               onLoad={drawDetectionMini}
             />
+
+            {/* Scanner line overlay */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden mix-blend-screen bg-transparent">
+              <div className="absolute w-full h-8 bg-gradient-to-b from-transparent via-electric-blue/40 to-transparent animate-scanline"></div>
+            </div>
+
             <div className="absolute top-2 left-2 flex items-center gap-2">
               <div className="w-1 h-3 rounded bg-electric-blue"></div>
               <span className="text-[8px] font-mono text-white/60 uppercase tracking-widest">
@@ -144,7 +150,7 @@ export function InferenceResults({
                       {pred.class_name.toUpperCase()}
                     </span>
                     <span className="text-white/40 ml-auto tabular-nums">
-                      [{pred.confidence.toFixed(2)}]
+                      [{(pred.confidence || pred.score || 0).toFixed(2)}]
                     </span>
                   </div>
                 );
@@ -299,9 +305,11 @@ export function InferenceResults({
                               >
                                 {/* Left-to-right filling hover effect */}
                                 {isActive && (
-                                  <div 
+                                  <div
                                     className="absolute inset-0 w-0 group-hover:w-full transition-all duration-500 ease-out z-0 origin-left"
-                                    style={{ backgroundColor: `${stg.color}20` }}
+                                    style={{
+                                      backgroundColor: `${stg.color}20`,
+                                    }}
                                   ></div>
                                 )}
 
@@ -526,7 +534,9 @@ export function InferenceResults({
                         <span className="text-white/40">HIGHEST CONF</span>
                         <span className="text-[#39FF14]/90">
                           {Math.max(
-                            ...predictions.map((p) => p.confidence),
+                            ...predictions.map(
+                              (p) => p.confidence || p.score || 0,
+                            ),
                           ).toFixed(2)}
                         </span>
                       </div>
