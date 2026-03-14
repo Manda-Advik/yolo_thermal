@@ -332,8 +332,17 @@ function App() {
       </div>
 
       {/* Hidden file input */}
-
-      <Sidebars />
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handleFileDrop(e.target.files[0]);
+          }
+        }}
+        className="hidden"
+        accept="image/*"
+      />      <Sidebars />
 
       {/* Main Content */}
       <div
